@@ -68,6 +68,7 @@
 	//End linux Functions
 	
 #endif
+//------Nosso programa comeca aqui, antes eh so umas coisas que usam para escolher as bibliotecas e qual o sistema operacional e tals
 int tamx_tela=30,tamy_tela=30; //tamanho da tela (nesse caso) 30x30
 int pontuacao=0;
 int midx,midy;
@@ -117,10 +118,10 @@ void printa_cobra(){
 void gera_fruta(){ //parece estar bugado
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posx_fruta=rand()%(tamx_tela-2) + 2;
-    if(posx_fruta==posx_poder) posx_fruta=tamx_tela-2;
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posy_fruta=rand()%(tamy_tela-2) + 2;
-    if(posy_fruta==posy_poder) posy_fruta=tamx_tela-2;
+    posx_fruta+=((posx_fruta==posx_cobra)&&(posy_fruta==posy_cobra))%(tamy_tela-2)+2; //bug na geracao de fruta e poder
+    //corrigir problema em que a fruta/poder caiam na mesma posicao entre elas e entre a cobra e ainda ficar dentro do liminte da tela
 }
 
 void cobra_come_fruta(){
@@ -135,63 +136,54 @@ void cobra_bateu_parede(){
     if(posy_cobra==1||posy_cobra==tamy_tela || posx_cobra==1 || posx_cobra==tamx_tela) gameover=1;
 }
 
-char muda_direcao_cobra(){
-    char c = getch();
-    // printf(" ");
-    if(direcao=='\033'){
-        getch();
-        switch(getch()){ // pega as setinhas como entrada
-            case 'D': //arrow left 
-                posx_cobra--;
-                break;
-            case 'C': // arrow right 
-                posx_cobra++;
-                break;
-            case 'B': // arrow down
-                posy_cobra++;
-                break;
-            case 'A': //arrow up
-                posy_cobra--;
-                break;
-        }
-    }
-    else{
-        c=tolower(c);
-        switch(c){ //pega as wasd como entrada
-            case 'a':
-                posx_cobra--;
-                break;
-            case 'd':
-                posx_cobra++;
-                break;
-            case 's':
-                posy_cobra++;
-                break;
-            case 'w':
-                posy_cobra--;
-                break;
-            case 'x': //*trocar para esc
-                gameover = 1;
-                break;
-        }
-    }
-    return c;
-}
-
 void move_cobra(){
-    gotoxy(posx_cobra,posy_cobra);
-    printf(" ");
-    // Muda direcao cobra
-    if(kbhit()) direcao=muda_direcao_cobra(); //se keyboard foi pressionado, verifica se 
-    //Movimenta cobra
-    if(direcao=='a') posx_cobra-=velocidade_cobra;
-    else if(direcao=='d') posx_cobra+=velocidade_cobra;
-    else if(direcao=='s') posy_cobra+=velocidade_cobra;
-    else posy_cobra-=velocidade_cobra;
-    gotoxy(posx_cobra,posy_cobra);
-    printf("0");
-    gotoxy(tamx_tela+100,0);
-    printf(" ");
+    if(kbhit()){
+        gotoxy(posx_cobra,posy_cobra);
+        printf(" ");
+        char c = getch();
+        // printf(" ");
+        if(c=='\033'){
+            getch();
+            switch(getch()){ // pega as setinhas como entrada
+                case 'D': //arrow left 
+                    posx_cobra--;
+                    break;
+                case 'C': // arrow right 
+                    posx_cobra++;
+                    break;
+                case 'B': // arrow down
+                    posy_cobra++;
+                    break;
+                case 'A': //arrow up
+                    posy_cobra--;
+                    break;
+            }
+        }
+        else{
+            c=tolower(c);
+            switch(c){ //pega as wasd como entrada
+                case 'a':
+                    posx_cobra--;
+                    break;
+                case 'd':
+                    posx_cobra++;
+                    break;
+                case 's':
+                    posy_cobra++;
+                    break;
+                case 'w':
+                    posy_cobra--;
+                    break;
+                case 'x': //*trocar para esc
+                    gameover = 1;
+                    break;
+            }
+        }
+        gotoxy(posx_cobra,posy_cobra);
+        printf("0");
+        gotoxy(tamx_tela+100,0);
+        printf(" ");
+    }
 }
 
 
@@ -199,10 +191,10 @@ void move_cobra(){
 void gera_poder(){ //parece estar bugado
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posx_poder=rand()%(tamx_tela-2) + 2;
-    if(posx_poder==posx_fruta) posx_poder=tamx_tela-2;
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posy_poder=rand()%(tamy_tela-2) + 2;
-    if(posy_poder==posy_fruta) posy_poder=tamy_tela-2;
+    posx_poder+=((posx_poder==posx_cobra)&&(posy_cobra==posy_poder))%(tamy_tela-2)+2;
+    posy_poder+=((posx_fruta==posx_poder)&&(posy_fruta==posy_poder))%(tamy_tela-2)+2;
 }
 
 void printa_poder(){
