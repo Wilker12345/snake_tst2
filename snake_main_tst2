@@ -118,10 +118,11 @@ void printa_cobra(){
 void gera_fruta(){ //parece estar bugado
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posx_fruta=rand()%(tamx_tela-2) + 2;
+    if(posx_fruta==posx_poder) posx_fruta=tamx_tela-2;
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posy_fruta=rand()%(tamy_tela-2) + 2;
-    posx_fruta+=((posx_fruta==posx_cobra)&&(posy_fruta==posy_cobra))%(tamy_tela-2)+2; //bug na geracao de fruta e poder
-    //corrigir problema em que a fruta/poder caiam na mesma posicao entre elas e entre a cobra e ainda ficar dentro do liminte da tela
+    if(posy_fruta==posy_poder) posy_fruta=tamx_tela-2;
+    //corrigir bug: cobra/fruta/poder nao podem aparecer no mesmo lugar
 }
 
 void cobra_come_fruta(){
@@ -191,10 +192,11 @@ void move_cobra(){
 void gera_poder(){ //parece estar bugado
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posx_poder=rand()%(tamx_tela-2) + 2;
+    if(posx_poder==posx_fruta) posx_poder=tamx_tela-2;
     srand(time(NULL)); //*trocar funcao rand por funcao melhor
     posy_poder=rand()%(tamy_tela-2) + 2;
-    posx_poder+=((posx_poder==posx_cobra)&&(posy_cobra==posy_poder))%(tamy_tela-2)+2;
-    posy_poder+=((posx_fruta==posx_poder)&&(posy_fruta==posy_poder))%(tamy_tela-2)+2;
+    if(posy_poder==posy_fruta) posy_poder=tamy_tela-2;
+    //corrigir bug: cobra/fruta/poder nao podem aparecer no mesmo lugar
 }
 
 void printa_poder(){
