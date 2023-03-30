@@ -109,8 +109,6 @@ void GameSetup (Pilha *pilha)
 int main(void) {
 
   int comando;
-  int comeco = 0;
-  int pos = 0;
   Pilha *pilha = malloc(sizeof(Pilha));
   srand(time(NULL));
 
@@ -160,6 +158,5 @@ int main(void) {
 
   } while (comando != 0);
 
-  printf("%d", pos);
   return 0;
 }
