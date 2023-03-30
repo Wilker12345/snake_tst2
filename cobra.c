@@ -6,7 +6,7 @@
 #include <conio.h>
 #include <windows.h>
 
-struct poder{ //sugest„o struct poder
+struct poder{ //sugest√£o struct poder
     int posx;
     int posy;
     struct poder* prox;
@@ -25,7 +25,7 @@ char direcao='a';
 
 //----------------parte_grafica---------------------------
 void printa_pontuacao(int i,int j){
-    if(!i && !j) printf("PontuaÁ„o: %d\n",pontuacao);
+    if(!i && !j) printf("Pontua√ß√£o: %d\n",pontuacao);
 }
 
 void printa_fruta(){
@@ -57,6 +57,110 @@ void printa_cobra(){
 }
 
 //----------------parte_logica---------------------------
+
+//-------Estrutura da cobra
+void InicializaPilha(Pilha *pilha) {
+
+  pilha->topo=NULL;
+  pilha->cabeca=NULL;
+  pilha->tamanho=0;
+
+}
+
+void MostrarPilha (Pilha *pilha)
+{
+  Node *aux;
+  
+  aux=pilha->topo;
+  
+
+  if (pilha->tamanho==0)
+  {
+    printf("\nPilha Vazia!\n");
+    return;
+  }
+  do
+    {
+      printf("\nPOSICAO: %d\n", aux->dados.posicao);
+      printf("hp: %d\n", aux->dados.hp);
+
+      aux=aux->next;
+      
+    } while (aux!= NULL); 
+ }
+      
+
+void Empilha (Pilha *pilha)
+{
+  Node *novo=malloc(sizeof(Node));
+
+  if(pilha->tamanho==0) 
+  {
+    //Ser√° percorrido durante a funcao GameSetup, que prepara a cobra para o jogo -> *cabeca sempre aponta para a cabeca da cobra.
+    novo->next=NULL;
+    pilha->cabeca=novo;
+  }
+  else
+  { 
+    novo->next=pilha->topo; 
+  }
+  
+  novo->dados.hp = 1;
+  novo->dados.posicao = pilha->tamanho;
+  pilha->tamanho++;
+
+  pilha->topo=novo;
+  
+}
+
+void Desempilha (Pilha *pilha)
+{
+
+  if (pilha->tamanho==0)
+  {
+    printf("-----------------------------");
+    printf("\nPilha vazia, nao eh possivel retirar elementos!\n");
+    printf("-----------------------------");
+    return;
+  }
+  else
+  {
+  Node *aux;
+  Node *salvar;
+  aux = pilha->topo;
+  salvar = pilha->topo->next;
+
+  free(aux);
+
+  pilha->topo=salvar;
+  pilha->tamanho--;
+    
+  }
+}
+
+void GameSetup (Pilha *pilha)
+{
+  Empilha(pilha);
+}
+
+void PowerUp_hp (Pilha *pilha)
+{
+  pilha->cabeca->dados.hp++;
+}
+
+void PowerUp_metade (Pilha *pilha)
+{
+  Node *aux=pilha->topo;
+
+  int i=0;
+  
+  do
+    {
+      Desempilha(pilha);
+      i++;
+    } while(i<=(pilha->tamanho)/2);
+
+}
 
 //-------logica_cobra/fruta
 void gera_fruta(){ //parece estar bugado
@@ -157,7 +261,7 @@ struct poder *gera_poder_lista(int posx, int posy){
     return poder;
 }
 
-void insere_poder_lista(int posx, int posy, struct poder** lista) { //sugest„o de incorporaÁ„o poder na lista
+void insere_poder_lista(int posx, int posy, struct poder** lista) { //sugest√£o de incorpora√ß√£o poder na lista
     struct poder* novo = gera_poder_lista(posx, posy);
 	struct poder* lista = *lista_ptr;
     if (lista == NULL) {
