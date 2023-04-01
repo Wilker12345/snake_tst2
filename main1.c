@@ -279,12 +279,29 @@ void move_cobra(Pilha *pilha){
         }
         gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y);
         printf("0");
+        
+        //printa corpo da cobra
         for (k=0;k<((pilha->tamanho)-1);k++)
         {
          gotoxy(aux2->dados.x,aux2->dados.y);
          printf("M");   
             aux2=aux2->next;
         }
+        
+        //colisao com corpo = gameover
+        if (pilha->tamanho>0)
+        {
+          Node *aux=pilha->topo;
+        for (k=0;k<(pilha->tamanho);k++)
+        {
+            if ((aux->dados.x==pilha->cabeca->dados.x) && (aux->dados.y==pilha->cabeca->dados.y) && (aux != pilha->cabeca))
+            {
+                gameover = 1;
+            }
+            aux=aux->next;  
+        }  
+        }
+        
         gotoxy(tamx_tela+100,0);
         printf(" ");
         //BUG: ao rotacionar poderes, a cobra vai perdendo corpo
