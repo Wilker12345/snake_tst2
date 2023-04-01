@@ -293,8 +293,11 @@ void move_cobra(Pilha *pilha, int matriz[100][100]){
             
             aux1=aux1->next;
       
-        }  
+       }   
+       
     }  
+    savex=pilha->cabeca->dados.x;
+       savey=pilha->cabeca->dados.y;
     if(kbhit()){
         char c = getch();
         if(c=='u' || c=='U') usa_poder();
@@ -374,14 +377,23 @@ void move_cobra(Pilha *pilha, int matriz[100][100]){
     gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y);
     printf("0");
     
+    if (pilha->tamanho>1)
+    {
+      gotoxy(savex,savey);
+      matriz[savex][savey]=1;
+    printf("M");  
+    }
+    
+    
+    
     //printa corpo da cobra
-    for (k=0;k<((pilha->tamanho)-1);k++)
+    /*for (k=0;k<((pilha->tamanho)-1);k++)
     {
      gotoxy(aux2->dados.x,aux2->dados.y);
      matriz[aux2->dados.x][aux2->dados.y]=1;
      printf("M");   
         aux2=aux2->next;
-    }
+    }*/
     
     /*//colisao com corpo = gameover
     if (pilha->tamanho>0)
