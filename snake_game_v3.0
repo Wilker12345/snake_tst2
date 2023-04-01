@@ -259,7 +259,7 @@ void delay(){
     tempo_printa-=10000*(tempo_printa>=100000);
 }
 
-void move_cobra(Pilha *pilha){
+void move_cobra(Pilha *pilha, int matriz[100][100]){
     clock_t tmp_fim=clock();
     //----------auxiliares
     // gotoxy(tamx_tela+50,2);
@@ -283,6 +283,7 @@ void move_cobra(Pilha *pilha){
     if (pilha->tamanho>1)
     {
         gotoxy(savex,savey);
+        matriz[savex][savey]=0;
         printf(" ");
     
         for (k=0;k<(pilha->tamanho-1);k++)
@@ -377,11 +378,12 @@ void move_cobra(Pilha *pilha){
     for (k=0;k<((pilha->tamanho)-1);k++)
     {
      gotoxy(aux2->dados.x,aux2->dados.y);
+     matriz[aux2->dados.x][aux2->dados.y]=1;
      printf("M");   
         aux2=aux2->next;
     }
     
-    //colisao com corpo = gameover
+    /*//colisao com corpo = gameover
     if (pilha->tamanho>0)
     {
         Node *aux=pilha->topo;
@@ -393,8 +395,13 @@ void move_cobra(Pilha *pilha){
             }
             aux=aux->next;  
         }  
-    }
+    }*/
     
+     if ((matriz[pilha->cabeca->dados.x][pilha->cabeca->dados.y]==1))
+        {
+            gameover=1;
+        }
+        
     // gotoxy(posx_cobra,posy_cobra);
     // printf("0");
     gotoxy(tamx_tela+100,0);
@@ -452,6 +459,16 @@ void cobra_pega_poder(Pilha * pilha){
 }
 
 int main(){
+int i, j;
+    int matriz[100][100];
+    
+    for (i=0;i<100;i++)
+    {
+        for (j=0;j<100;j++)
+        {
+            matriz[i][j]=0;
+        }
+    }
     Pilha *pilha = malloc(sizeof(Pilha));
     InicializaPilha(pilha);
     system("clear");
@@ -480,7 +497,7 @@ int main(){
         {
             //------------------------cobra---------------------------
             {
-                move_cobra(pilha); //nao detecta a funcao kbhit, mesmo tendo inserido sua biblioteca (conio.h)
+                move_cobra(pilha, matriz); //nao detecta a funcao kbhit, mesmo tendo inserido sua biblioteca (conio.h)
                 cobra_come_fruta(pilha);
                 cobra_bateu_parede(pilha);
             }
