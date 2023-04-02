@@ -19,52 +19,52 @@
 //Code: http://ubuntuforums.org/showthread.php?t=549023
 void gotoxy(int x,int y)
 {
-printf("%c[%d;%df",0x1B,y,x);
+    printf("%c[%d;%df",0x1B,y,x);
 }
 
 //http://cboard.cprogramming.com/c-programming/63166-kbhit-linux.html
 int kbhit(void)
 {
- struct termios oldt, newt;
- int ch;
- int oldf;
-
- tcgetattr(STDIN_FILENO, &oldt);
- newt = oldt;
- newt.c_lflag &= ~(ICANON | ECHO);
- tcsetattr(STDIN_FILENO, TCSANOW, &newt);
- oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
- fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
-
- ch = getchar();
-
- tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
- fcntl(STDIN_FILENO, F_SETFL, oldf);
-
- if(ch != EOF)
- {
-ungetc(ch, stdin);
-return 1;
- }
-
- return 0;
+    struct termios oldt, newt;
+    int ch;
+    int oldf;
+    
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+    
+    ch = getchar();
+    
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+    
+    if(ch != EOF)
+    {
+    ungetc(ch, stdin);
+    return 1;
+    }
+    
+    return 0;
 }
 
 //http://www.experts-exchange.com/Programming/Languages/C/Q_10119844.html - posted by jos
 char getch()
 {
-char c;
-system("stty raw");
-c= getchar();
-system("stty sane");
-//printf("%c",c);
-return(c);
+    char c;
+    system("stty raw");
+    c= getchar();
+    system("stty sane");
+    //printf("%c",c);
+    return(c);
 }
 
 void clrscr()
 {
-system("clear");
-return;
+    system("clear");
+    return;
 }
 //End linux Functions
 
@@ -85,8 +85,10 @@ int tempo_printa=500000;
 clock_t tmp_comeco=0;
 
 //----------------parte_grafica---------------------------
-void printa_pontuacao(int i,int j){
-    if(!i && !j) printf("Pontuação: %d\n",pontuacao);
+void printa_pontuacao(){
+    //if(!i && !j)
+    gotoxy(0, tamy_tela + 1);
+    printf("Pontuação: %d\n", pontuacao);
 }
 
 void printa_fruta(){
@@ -147,6 +149,16 @@ void printa_cobra(Pilha *pilha){
          printf("0"); */  
         
 
+    gotoxy(tamx_tela+100,0);
+}
+
+void printa_vidas(){ //Chamar a função toda vez que a cobra colidir/tomar dano e quando ela ganhar vida
+    int vidas = 1; //Apagar depois que criar a variavel que controla a vida
+    gotoxy(0, tamy_tela+2);
+    printf("HP: ");
+    for(int i = 0; i < vidas; i++)
+        printf("♥");
+        
     gotoxy(tamx_tela+100,0);
 }
 
@@ -494,6 +506,8 @@ int i, j;
     printa_poder_tela();
     printa_tela_dos_poderes();
     printa_lista_poderes();
+    printa_pontuacao();
+    printa_vidas();
     gotoxy(tamx_tela,tamy_tela);
     printf("\7");
     while(!gameover){
