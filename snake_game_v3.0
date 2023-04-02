@@ -182,6 +182,7 @@ void cobra_come_fruta(Pilha *pilha){
         Empilha(pilha, pilha->cabeca->dados.x-1, pilha->cabeca->dados.y-1);
         gera_fruta();
         printa_fruta();
+        printa_pontuacao();
     }
     //  if(posx_cobra==posx_fruta && posy_cobra==posy_fruta){
         
