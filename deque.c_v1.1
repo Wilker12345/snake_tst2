@@ -1,0 +1,306 @@
+#include "deque.h"
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef int T;
+
+
+//Lista
+void init_lista(lst *lista){
+    node *sent=(node*) malloc(sizeof(node)); //init poder 1 e sentinela
+    lista->sentinela=sent;
+    
+    node *n=(node*) malloc(sizeof(node)); //init poder 1 e sentinela
+    lista->poder1=n;
+    lista->poder1->data=0;
+   
+    node *n2=(node*) malloc(sizeof(node)); //init poder 2
+    lista->poder2=n2;
+    lista->poder2->data=0;
+   
+    node *n3=(node*) malloc(sizeof(node)); //init poder 3
+    lista->poder3=n3;
+    lista->poder3->data=0;
+    
+    lista->sentinela->prox=lista->poder1;
+    lista->sentinela->ant=lista->poder3;
+    
+    lista->poder1->prox=lista->poder2;
+    lista->poder1->ant=lista->poder3;
+    lista->poder2->ant=lista->poder1;
+    lista->poder2->prox=lista->poder3;
+    lista->poder3->ant=lista->poder2;
+    lista->poder3->prox=lista->poder1;
+    
+    lista->tamanho=0;
+}
+
+void insere_lista(T dado,lst *lista){
+    if(lista->poder1->data==0) lista->poder1->data=dado;
+    else if(lista->poder2->data==0) lista->poder2->data=dado;
+    else if(lista->poder3->data==0) lista->poder3->data=dado;
+    else return;
+    lista->tamanho++;
+}
+
+void remove_lista(lst *lista){
+    if(lista->sentinela->prox->data!=0){
+        lista->sentinela->prox->data=0;
+        lista->tamanho--;
+    }
+}
+
+void gira_esquerda(lst *lista){
+    node *aux=(node*) malloc(sizeof(node)); //obs.: d->sentinela->prox->prox => elemento do meio da lista 
+    aux=lista->sentinela->ant;
+    lista->sentinela->ant=lista->sentinela->prox;
+    lista->sentinela->prox=lista->sentinela->prox->prox;
+    lista->sentinela->prox->prox=aux;
+}
+
+void gira_direita(lst *lista){
+    gira_esquerda(lista);
+    gira_esquerda(lista);
+}
+
+
+int lista_elemento_inicial(lst *lista){
+  return lista->sentinela->prox->data;
+}
+
+int lista_elemento_meio(lst *lista){
+    return lista->sentinela->prox->prox->data;
+}
+
+int lista_elemento_final(lst *lista){
+  return lista->sentinela->ant->data;
+}
+
+int lista_tamanho(lst *lista){
+  return lista->tamanho;
+}
+
+int vazia(lst *lista){
+  return lista->sentinela->prox==lista->sentinela;
+}
+
+int cheia(lst *lista,int limite){
+  return lista_tamanho(lista)>=limite;
+}
+
+//Pilha------------------------------------------
+void InicializaPilha(Pilha *pilha) {
+
+  pilha->topo=NULL;
+  pilha->cabeca=NULL;
+  pilha->tamanho=0;
+
+}
+
+void MostrarPilha (Pilha *pilha)
+{
+  Node *aux;
+  
+  aux=pilha->topo;
+  
+
+  if (pilha->tamanho==0)
+  {
+    printf("\nPilha Vazia!\n");
+    return;
+  }
+  do
+    {
+      printf("\nPOSICAO: %d\n", aux->dados.posicao);
+      printf("hp: %d\n", aux->dados.hp);
+
+      aux=aux->next;
+      
+    } while (aux!= NULL); 
+ }
+      
+
+void Empilha (Pilha *pilha, int x, int y)
+{
+  Node *novo=malloc(sizeof(Node));
+
+  if(pilha->tamanho==0) 
+  {
+    //Será percorrido durante a funcao GameSetup, que prepara a cobra para o jogo -> *cabeca sempre aponta para a cabeca da cobra.
+    novo->next=NULL;
+    pilha->cabeca=novo;
+  }
+  else
+  { 
+    novo->next=pilha->topo; 
+  }
+  
+  novo->dados.hp = 1;
+  novo->dados.posicao = pilha->tamanho;
+  novo->dados.x=x;
+  novo->dados.y=y;
+  pilha->tamanho++;
+
+  pilha->topo=novo;
+  
+}
+
+void Desempilha (Pilha *pilha)
+{
+
+  if (pilha->tamanho==0)
+  {
+    printf("-----------------------------");
+    printf("\nPilha vazia, nao eh possivel retirar elementos!\n");
+    printf("-----------------------------");
+    return;
+  }
+  else
+  {
+  Node *aux;
+  Node *salvar;
+  aux = pilha->topo;
+  salvar = pilha->topo->next;
+
+  free(aux);
+
+  pilha->topo=salvar;
+  pilha->tamanho--;
+    
+  }
+}
+
+void GameSetup (Pilha *pilha, int x, int y)
+{
+  Empilha(pilha, x, y);
+}
+
+void PowerUp_hp (Pilha *pilha)
+{
+  pilha->cabeca->dados.hp++;
+}
+
+void PowerUp_metade (Pilha *pilha)
+{
+  Node *aux=pilha->topo;
+
+  int i=0;
+  
+  do
+    {
+      Desempilha(pilha);
+      i++;
+    } while(i<=(pilha->tamanho)/2);
+
+}
+
+//deque-------------------------------------------------
+void InicializaDeque(Deque *deque) {
+
+  deque->inicio=NULL;
+  deque->fim=NULL;
+  deque->total_elementos=0;
+}
+
+void PoeI (int x, int y, Deque *deque)
+{
+
+  No *novo = malloc(sizeof(No));
+
+ 
+  novo->dados.x=x;
+  novo->dados.y=y;
+
+   if (deque->total_elementos==0)
+  {
+    deque->inicio=novo;
+    deque->fim=novo;
+  }
+
+  else
+   {
+  novo->next=deque->inicio;
+  novo->prev=NULL;
+  deque->inicio->prev=novo;
+  deque->inicio=novo;
+   }
+  
+    deque->total_elementos++;
+  
+}
+
+void PoeF (int x, int y, Deque*deque)
+{
+    No *novo=malloc(sizeof(No));
+
+  novo->dados.x=x;
+  novo->dados.y=y;
+
+  if (deque->total_elementos==0)
+  {
+    deque->inicio=novo;
+    deque->fim=novo;
+  }
+
+  else
+  {
+   novo->next=NULL;
+  novo->prev=deque->fim;
+  deque->fim->next=novo;
+  deque->fim=novo; 
+  }
+
+    deque->total_elementos++;
+
+}
+
+void TiraI (Deque *deque)
+{
+  if (deque->total_elementos==1)
+  {
+    deque->inicio->next=NULL;
+    deque->inicio=NULL;
+    deque->total_elementos=0;
+  }
+
+  else 
+  {
+  Node *aux;
+  Node* salvar;
+  aux=deque->inicio;
+  salvar=deque->inicio->next;
+  deque->inicio->next->prev=NULL;
+
+
+    free(aux);
+  
+    deque->inicio=salvar;
+    deque->total_elementos--;
+  }
+
+}
+
+void TiraF (Deque *deque)
+{
+
+  if (deque->total_elementos==1)
+  {
+    deque->fim->prev=NULL;
+    deque->fim=NULL;
+    deque->total_elementos=0;
+  }
+  else{
+    Node *aux;
+  Node* salvar;
+  aux=deque->fim;
+  salvar=deque->fim->prev;
+  deque->fim->prev->next=NULL;
+
+
+  free(aux);
+  deque->fim=salvar;
+    deque->total_elementos--;
+  }
+  
+
+}
