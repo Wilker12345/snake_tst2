@@ -323,6 +323,19 @@ void poder_Y(Pilha *pilha){
         
 }
 
+void poder_W(Pilha *pilha) {
+    node *anterior = NULL;
+    node *atual = pilha->topo;
+    node *proximo = NULL;
+    while (atual != NULL) {
+        proximo = atual->proximo;
+        atual->proximo = anterior;
+        anterior = atual;
+        atual = proximo;
+    }  
+    pilha->topo = anterior;
+}
+
 void usa_poder(Pilha *pilha){
     if(deque_elemento_inicial(&lista_poderes)==1) poder_X(); //trocar 1 para X
     // else if(deque_elemento_inicial(&lista_poderes)=='Y') poder_Y();
