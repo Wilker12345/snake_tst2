@@ -201,15 +201,9 @@ void limpa_cobra(Deque *deque){
     //Limpa os caracteres da posição da cobra ao usar o poder que corta seu corpo pela metade, evitando que elementos removidos da estrutura continuem aparecendo na tela
     No *aux= deque->fim;
    
-    
-    do{
-        gotoxy(aux->dados.x,aux->dados.y);
-         
-        printf(" ");
-
-        aux=aux->next;
-      
-    } while (aux!= NULL);
+    gotoxy(aux->dados.x,aux->dados.y);
+    printf(" ");
+    aux=aux->next;
 
     int aux_x = deque->fim->dados.x;
     int aux_y = deque->fim->dados.y;
@@ -435,7 +429,11 @@ void usa_poder(Pilha *pilha, Deque *deque){
 char botao(Pilha *pilha, Deque *deque){
     char cha=getch();
     cha=tolower(cha);
-    if(cha=='u') usa_poder(pilha, deque);
+    if(cha=='u'){
+        if(lista_elemento_inicial(&lista_poderes) == 'X' || lista_elemento_inicial(&lista_poderes) == 'Y' || lista_elemento_inicial(&lista_poderes) == 'W'){
+            usa_poder(pilha, deque);
+        }
+    } 
     else if(permissao_usa_especial && cha==32){
         // gotoxy(15,30);
         // printf("CCC");
