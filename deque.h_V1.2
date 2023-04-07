@@ -1,0 +1,103 @@
+#ifndef DEQUE_H_INCLUDED
+#define DEQUE_H_INCLUDED
+
+typedef int T;
+//lista-------------------------
+typedef struct _node{
+    T data;
+    struct _node *prox,*ant;
+} node;
+
+typedef struct _list{
+    node *sentinela;
+    node *poder1,*poder2,*poder3;
+    unsigned int tamanho;
+} lst;
+
+//pilha-------------------------------
+typedef struct dados {
+  int posicao; //posicao=0 exclusivo da cabeca
+  int x;
+  int y;
+  int hp;
+} Dados;
+
+typedef struct node {
+  Dados dados; 
+  struct node *next;
+
+} Node;
+
+typedef struct pilha {
+  Node *topo;
+  Node *cabeca;
+  int tamanho;
+} Pilha;
+
+//deque--------------------------------
+typedef struct no {
+    Dados dados;
+  struct no *next;
+   struct no *prev;
+
+} No;
+
+typedef struct 
+{
+  No *inicio;
+  No *fim;
+  int total_elementos;
+} Deque;
+
+
+//Lista
+void init_lista(lst *);
+int lista_elemento_inicial(lst *);
+int lista_elemento_meio(lst *);
+int lista_elemento_final(lst *);
+int lista_tamanho(lst *);
+void insere_lista(T dado,lst *);
+void remove_lista(lst *);
+void gira_esquerda(lst *);
+void gira_direita(lst *);
+
+//pilha
+void InicializaPilha(Pilha *pilha);
+void MostrarPilha (Pilha *pilha);
+void Empilha (Pilha *pilha, int x, int y);
+void Desempilha (Pilha *pilha);
+void GameSetup (Pilha *pilha, int x, int y);
+void PowerUp_hp (Pilha *pilha);
+void PowerUp_metade (Pilha *pilha);
+
+//deque
+void InicializaDeque(Deque *deque);
+
+void PoeI (int x, int y, Deque *deque);
+
+void PoeF (int x, int y, Deque*deque);
+
+void TiraI (Deque *deque);
+
+void TiraF (Deque *deque);
+
+//------Pilha_sequencial-----------------------------
+
+typedef struct _node_pilha_sequencial{
+    int data;
+    struct _node *prox,*ant;
+} node_pilha_sequencial;
+
+typedef struct _dequeue{
+    T *itens;
+    int inicio,fim,tamanho_max_itens;
+    unsigned int tamanho;
+} barra_especial;
+
+
+void init_barra_especial(barra_especial *,T);
+int barra_especial_tamanho(barra_especial *);
+void insere_barra_especial(barra_especial *,T dado);
+
+
+#endif // DEQUE_H_INCLUDED
