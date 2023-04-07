@@ -745,7 +745,10 @@ void gera_poder(Pilha *pilha){ //parece estar bugado
     if(aux_pega_valor==1) poder_printado='X';
     else if(aux_pega_valor==2) poder_printado='Y';
     else if(aux_pega_valor==3) poder_printado='W';
-    else poder_printado='Z';
+    else{
+      poder_printado='Z';
+      poder_hpUp();
+    } 
     
     do{ //gera frutas ate que ela nao esteja na pos da cobra ou dos poderes
         srand(time(NULL)); //*trocar funcao rand por funcao melhor
@@ -829,7 +832,7 @@ int main(){
     printa_lista_poderes();
     printa_pontuacao();
     printa_barra_especial_nome();
-    inicializa_vida(pilha, 2);
+    inicializa_vida(pilha, 1);
     printa_vidas(pilha);
     printa_tutorial();
     gotoxy(tamx_tela,tamy_tela);
