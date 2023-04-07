@@ -532,31 +532,9 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
     // printf("%d %d %d",tmp_comeco_poderX,tmp_fim,tmp_comeco_poderX-tmp_fim);
     char c=direcao;
     c=delay(pilha, deque);
-    Node *aux1, *aux2;
-  
-    aux1=pilha->topo;
-    aux2=pilha->topo;
+ 
     int savex, savey;
-    savex=aux1->dados.x;
-    savey=aux1->dados.y;
   
-    // int k=0;
-    // if (pilha->tamanho>1)
-    // {
-    //     gotoxy(savex,savey);
-    //     matriz[savex][savey]=0;
-    //     printf(" ");
-    
-    //     for (k=0;k<(pilha->tamanho-1);k++)
-    //     {
-    //         aux1->dados.x=aux1->next->dados.x;
-    //         aux1->dados.y=aux1->next->dados.y;
-            
-    //         aux1=aux1->next;
-      
-    //   }   
-       
-    // }  
     savex=pilha->cabeca->dados.x;
     savey=pilha->cabeca->dados.y;
     if(kbhit()){
@@ -642,46 +620,27 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
     
     if (deque->total_elementos>0)
     {
+        //Para dar a impressao de movimento ao corpo da cobra, realizamos um push na posicao que a cabeca da cobra ocupava a 1 ciclo de movimento anterior e um pop no fim do corpo.
         
+        //Pop do fim do corpo:
         gotoxy(deque->fim->dados.x,deque->fim->dados.y);
         matriz[deque->fim->dados.x][deque->fim->dados.y]=0;
         printf(" ");
         TiraF(deque);
         
+        //Push nas coordenadas savex e savey, que sao as coordenadas da cabeca da cobra antes da atualizacao de seu movimento:
         PoeI(savex,savey, deque);
         gotoxy(deque->inicio->dados.x,deque->inicio->dados.y);
         matriz[deque->inicio->dados.x][deque->inicio->dados.y]=1;
         printf("M"); 
           
     }
-    
-    
-    
-    //printa corpo da cobra
-    /*for (k=0;k<((pilha->tamanho)-1);k++)
-    {
-     gotoxy(aux2->dados.x,aux2->dados.y);
-     matriz[aux2->dados.x][aux2->dados.y]=1;
-     printf("M");   
-        aux2=aux2->next;
-    }*/
-    
-    /*//colisao com corpo = gameover
-    if (pilha->tamanho>0)
-    {
-        Node *aux=pilha->topo;
-        for (k=0;k<(pilha->tamanho);k++)
-        {
-            if ((aux->dados.x==pilha->cabeca->dados.x) && (aux->dados.y==pilha->cabeca->dados.y) && (aux != pilha->cabeca))
-            {
-                gameover = 1;
-            }
-            aux=aux->next;  
-        }  
-    }*/
-    
+
+   
+   //Sistema de colisao: quando as coordenadas da cabeca coincidem com a alguma coordenada do corpo, a cobra perde vida.
      if ((matriz[pilha->cabeca->dados.x][pilha->cabeca->dados.y]==1))
         {
+        //A matriz guardara com valor 1 as coordenadas x,y onde ha corpo. Assim, caso as coordenadas da cabeca dentro da matriz tenha conteudo 1, sabemos que e um espaco onde uma parte do corpo esta ocupando.
             pilha->cabeca->dados.hp--;
             limpa_linha_vidas();
             printa_vidas(pilha);
@@ -689,8 +648,7 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
                 gameover=1;
         }
         
-    // gotoxy(posx_cobra,posy_cobra);
-    // printf("0");
+    
     gotoxy(tamx_tela+100,0);
     printf(" ");
 }
