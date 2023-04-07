@@ -560,7 +560,8 @@ void move_cobra_lista(Pilha *pilha,Deque * deque, int matriz[100][100]){ //essa 
     }
     
     gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y);
-    printf("0");
+    if(!modo_cobra_imortal) printf("0");
+    else printf("X");
     
     if (deque->total_elementos>0)
     {
@@ -573,19 +574,32 @@ void move_cobra_lista(Pilha *pilha,Deque * deque, int matriz[100][100]){ //essa 
         PoeI(savex,savey, deque);
         gotoxy(deque->inicio->dados.x,deque->inicio->dados.y);
         matriz[deque->inicio->dados.x][deque->inicio->dados.y]=1;
-        printf("M"); 
+        if(!modo_cobra_imortal) printf("M");
+        else printf("@");
+        
           
     }
     
+
      if ((matriz[pilha->cabeca->dados.x][pilha->cabeca->dados.y]==1))
         {
+            if(!modo_cobra_imortal){
             pilha->cabeca->dados.hp--;
             limpa_linha_vidas();
             printa_vidas(pilha);
             if(pilha->cabeca->dados.hp <= 0)
                 gameover=1;
+            }
+            else{
+                int paredeX = pilha->cabeca->dados.x;
+                int paredeY = pilha->cabeca->dados.y;
+                gotoxy(paredeX, paredeY);
+                printf("@");
+                gotoxy(tamx_tela+100, 0);
+                pilha->cabeca->dados.x = pilha->cabeca->dados.y = 15;
+            }
         }
-        
+    
     // gotoxy(posx_cobra,posy_cobra);
     // printf("0");
     gotoxy(tamx_tela+100,0);
@@ -709,7 +723,7 @@ int main(){
         {
             //------------------------cobra---------------------------
             {
-                move_cobra(&pilha,&deque, matriz); //nao detecta a funcao kbhit, mesmo tendo inserido sua biblioteca (conio.h)
+                move_cobra_lista(&pilha,&deque, matriz); //nao detecta a funcao kbhit, mesmo tendo inserido sua biblioteca (conio.h)
                 cobra_come_fruta(&pilha,&deque);
                 cobra_bateu_parede(&pilha);
             }
