@@ -239,7 +239,10 @@ void gera_fruta(Pilha *pilha){ //parece estar bugado
 
 void printa_barra_especial_nome(){
     gotoxy(tamx_tela+2,tamy_tela-6);
-    printf("Barra de Especial");
+    printf("Barra de Especial: ");
+    gotoxy(tamx_tela+21,tamy_tela-6);
+    printf("Ainda nao... ");
+    gotoxy(tamx_tela+100,0);
 }
 
 void printa_barra_especial(){ //essa funcao deve existir no .c .h da pilha sequencial
@@ -251,7 +254,7 @@ void printa_barra_especial(){ //essa funcao deve existir no .c .h da pilha seque
 }
 
 void poder_barra_especial(){
-    if(!(pontuacao%10)){ //quando a cobra pega x frutas (no caso apenas uma) a barra de especial aumenta em uma unidade (no caso, nao precisaria disso, pois toda vez que a cobra
+    if(!(pontuacao%10) && barra_especial_tamanho(&especial)<5){ //quando a cobra pega x frutas (no caso apenas uma) a barra de especial aumenta em uma unidade (no caso, nao precisaria disso, pois toda vez que a cobra
     //come uma fruta a barra aumenta, mas se fosse mais frutas necessarias para aumentar a barra de especial, dai sim precisaria)
         insere_barra_especial(&especial,0);
         //barra_especial++; isso iria aumentar no insere_pilha_espeical
@@ -261,8 +264,10 @@ void poder_barra_especial(){
         // printa_frase_poder_especial(); //printar: pressione espaco para usar 'o especial' asdadadas
         // gotoxy(15,1);
         // printf("BBB");
+        gotoxy(tamx_tela+21,tamy_tela-6);
+        printf("Pronto!!            ");
+        gotoxy(tamx_tela+100,0);
         permissao_usa_especial=1; // ?
-        especial.tamanho=0;
         //barra_especial=0; so existe no segunda implementacao
     }
 }
@@ -401,9 +406,13 @@ char botao(Pilha *pilha, Deque *deque){
     else if(permissao_usa_especial && cha==32){
         // gotoxy(15,30);
         // printf("CCC");
+        gotoxy(tamx_tela+21,tamy_tela-6);
+        printf("Poder Ativo!!");
+        gotoxy(tamx_tela+100,0);
         modo_cobra_imortal=1; //cha==10  =  caso tenha apertado a barra de espaco //se o especial foi usado, entao a cobra fica imortal
         tmp_comeco_especial=clock();
         desprinta_barra_especial();
+        especial.tamanho=0;
         // muda_aparecia_cobra();
     }
     else if(cha=='x') gameover=1;
@@ -470,6 +479,9 @@ void verifica_tempo_especial(){
         // gotoxy(1,15);
         // printf("AAA");
         permissao_usa_especial=0;
+        gotoxy(tamx_tela+21,tamy_tela-6);
+        printf("Ainda nao... ");
+        gotoxy(tamx_tela+100,0);
     }
 }
 
@@ -770,9 +782,6 @@ int main(){
                 cobra_pega_poder(pilha); //se cobra pegar poder
             }
         }
-        // alterna_poder();
-        // usa_poder();
-        // deleta_poder();
     }
     return 0;
 }
