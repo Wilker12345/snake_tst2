@@ -101,7 +101,7 @@ void printa_pontuacao(){
 
 void printa_fruta(){
     gotoxy(posx_fruta,posy_fruta);
-    printf("*"); //trocar por printa lista
+    printf("*");
     gotoxy(tamx_tela+100,0);
 }
 
@@ -122,14 +122,6 @@ void printa_tela(){
 
 
 void printa_cobra(Pilha *pilha){
-    // if(i==posy_cobra && j==posx_cobra) //versao anterior
-    //     printf("0"); //*trocar por printa lista
-    //-------------testar com gotoxy
-    // if(i==posy_cobra && j==posx_cobra) //versao anterior
-    // int i=0,j=0;
-    // gotoxy(posx_cobra,posy_cobra);
-    // printf("0");
-    // gotoxy(tamx_tela+100,0);
     int i=0,j=0;
     Node *aux=pilha->topo;
    
@@ -153,11 +145,6 @@ void printa_cobra(Pilha *pilha){
       
     } while (aux!= NULL);
          
-         /*gotoxy(posx_cobra,posy_cobra);
-         
-         printf("0"); */  
-        
-
     gotoxy(tamx_tela+100,0);
 }
 
@@ -265,18 +252,13 @@ void poder_barra_especial(){
     if(!(pontuacao%10) && barra_especial_tamanho(&especial)<5){ //quando a cobra pega x frutas (no caso apenas uma) a barra de especial aumenta em uma unidade (no caso, nao precisaria disso, pois toda vez que a cobra
     //come uma fruta a barra aumenta, mas se fosse mais frutas necessarias para aumentar a barra de especial, dai sim precisaria)
         insere_barra_especial(&especial,0);
-        //barra_especial++; isso iria aumentar no insere_pilha_espeical
         printa_barra_especial(&especial);
     }
     if(barra_especial_tamanho(&especial)==5){ //quando a barra de especial chega em 5 unidades
-        // printa_frase_poder_especial(); //printar: pressione espaco para usar 'o especial' asdadadas
-        // gotoxy(15,1);
-        // printf("BBB");
         gotoxy(tamx_tela+21,tamy_tela-6);
         printf("Pronto!!            ");
         gotoxy(tamx_tela+100,0);
         permissao_usa_especial=1; // ?
-        //barra_especial=0; so existe no segunda implementacao
     }
 }
 
@@ -285,18 +267,11 @@ void cobra_come_fruta(Pilha *pilha,Deque *deque){
         printf("\a");
         pontuacao+=pontos_ganhos_por_fruta;
         poder_barra_especial();
-        //Empilha(pilha, pilha->cabeca->dados.x-1, pilha->cabeca->dados.y-1);
         PoeI(pilha->cabeca->dados.x-1, pilha->cabeca->dados.y-1, deque);
         gera_fruta(pilha);
         printa_fruta();
         printa_pontuacao();
     }
-    //  if(posx_cobra==posx_fruta && posy_cobra==posy_fruta){
-        
-    //     pontuacao+=pontos_ganhos_por_fruta;
-    //     gera_fruta();
-    //     printa_fruta();
-    // }
 }
 
 void cobra_bateu_parede(Pilha *pilha){
@@ -333,10 +308,10 @@ void cobra_bateu_parede(Pilha *pilha){
     }
 }
 
-void printa_lista_poderes(){
+void printa_lista_poderes(){ //printa lista de poderes
     gotoxy(48,0);
     printf("↓");
-    if(lista_elemento_inicial(&lista_poderes)!=0){ //printa elemento inicial. ELemento que fica no meio da lista
+    if(lista_elemento_inicial(&lista_poderes)!=0){ //printa elemento inicial. ELemento que fica no meio da lista (indicado pela seta)
         gotoxy(48,2);
         printf("%c",lista_elemento_inicial(&lista_poderes));
     }
@@ -364,9 +339,9 @@ void printa_lista_poderes(){
 }
 
 void poder_X(){ //aumenta velocidade por um tempo
-    poder_x_usado=1;
-    tmp_comeco_poderX=clock();
-    tempo_printa=50000;
+    poder_x_usado=1; //variavel auxiliar para dizer se o poder esta atitvo ou nao
+    tmp_comeco_poderX=clock(); //marca o tempo inicial que o poder foi ativado
+    tempo_printa=50000; // muda a velocidade da cobra para uma velocidade que equivale ao tempo de printagem igual a 50000
 }
 
 void poder_Y(Pilha *pilha, Deque *deque){ //diminui o corpo da cobra pela metade
@@ -399,16 +374,17 @@ void poder_W(Pilha *pilha){
     pilha->topo = anterior;
 }
 
-void usa_poder(Pilha *pilha, Deque *deque){
-    if(lista_elemento_inicial(&lista_poderes)=='X') poder_X(); //trocar 1 para X
+void usa_poder(Pilha *pilha, Deque *deque){ // caso alguma tecla de usar poder tenha sido pressionada, verifica qual eh o elemento que esta no meio da lista (indicado pela seta)
+    // e usa o respectivo poder. O poder indicado pela seta eh o poder que esta como elemento inicial da estrutura da lista
+    if(lista_elemento_inicial(&lista_poderes)=='X') poder_X();
     else if(lista_elemento_inicial(&lista_poderes)=='Y') poder_Y(pilha, deque);
     else poder_W(pilha);
-    // printf("\7");
-    remove_lista(&lista_poderes);
-    printa_lista_poderes(&lista_poderes);
+    printf("\7"); //quando pega poder, faz barulho
+    remove_lista(&lista_poderes); //remove poder da lista
+    printa_lista_poderes(&lista_poderes); //printa lista atualizada
 }
 
-void desprinta_barra_especial(){
+void desprinta_barra_especial(){ //limpa barra de especial depois que usa o especial
     gotoxy(tamx_tela+2,tamy_tela-barra_especial_tamanho(&especial));
     printf("          "); 
     gotoxy(tamx_tela+2,tamy_tela-1);
@@ -453,58 +429,50 @@ char botao(Pilha *pilha, Deque *deque){
     return '0';
 }
 
-
-char delay(Pilha *pilha, Deque *deque){
-    // Converting time into milli_seconds
+//funcao inspirada na funcao delay do Geeks for Geeks link site: https://www.geeksforgeeks.org/time-delay-c/
+char delay(Pilha *pilha, Deque *deque){ //essa funcao ira criar um delay, ira ficar loppando ate uma quantidade de tempo definida pela variavel "tempo_printa" ser atingido
     // para alterar o tempo para menos de um segundo, altere a constate que multimplica a variavel numero de segundos (nao sei se usar float eh melhor, mas estou usando isso).
     int milli_seconds = tempo_printa; // 1000000 tempo referencia lento (1 segundo) aproximadamente.
                                                     //  100000 tempo rapainho pacas.
     //mudar para tempo_printa depois dos testes
  
-    // Storing start time
+    // Tempo que comeca a contagem
     clock_t start_time = clock();
  
-    // looping till required time is not achieved
+    // loop ateh tempo necessario nao for ativo
     char ch='0';
-    while (clock() < start_time + milli_seconds) if(kbhit()) ch=botao(pilha,deque);
+    while (clock() < start_time + milli_seconds) if(kbhit()) ch=botao(pilha,deque); //caso alguma tecla tenha sido apertada durante esse loop, uma variavel auxiliar 
+    //ch recebe essa nova direcao
    
-    tempo_printa-=10000*(tempo_printa>=250000);
-    if(ch!='0') return ch;
-    return direcao;
+    tempo_printa-=10000*(tempo_printa>=250000); //vai diminuindo a velocidade da cobra ateh chegar na velocidade dada pelo tempo de printagem 250000
+    if(ch!='0') return ch; //Se houve mudanca de direcao, retorna qual eh essa nova direcao
+    return direcao; //caso contrario retorna a direcao a mesma direcao que antes
 }
 
-void verifica_tempo_poderX(){
+void verifica_tempo_poderX(){ //verifica se o tempo necessario do poder X ja passou, caso sim, desliga o modo do poder e faz a cobra voltar a velocidade normal
     clock_t tmp_fim=clock();
     if(poder_x_usado && tmp_fim-1000000>=tmp_comeco_poderX){ //tempo legal 1000000
-        tempo_printa=100000;
+        tempo_printa=250000;
         poder_x_usado=0;
     }
 }
 
-void verifica_tempo_especial(){
+void verifica_tempo_especial(){ //essa funcao ira verificar se o tempo necessario para a barra de especial desaparecer foi atingido
     clock_t tmp_fim=clock();
-    if(modo_cobra_imortal && tmp_fim-10000000>=tmp_comeco_especial){ //tempo legal 1000000
-        modo_cobra_imortal=0;
-        // gotoxy(1,15);
-        // printf("AAA");
-        permissao_usa_especial=0;
+    if(modo_cobra_imortal && tmp_fim-10000000>=tmp_comeco_especial){ // se o especial estiver ativo (a modo cobra imortal = 1) e passar o tempo necessario (quase 5 segundos)
+        modo_cobra_imortal=0;                                        // desativa o modo cobra imortal e reinicia algumas variaveis para que isso possa ocorrer de novo
+        permissao_usa_especial=0;                                   // as outras variaves sao reiniciadas em outras funcoes
         gotoxy(tamx_tela+21,tamy_tela-6);
-        printf("Ainda nao... ");
+        printf("Ainda nao... ");  //volta a printa que a barra de especial ainda nao esta pronta
         gotoxy(tamx_tela+100,0);
     }
 }
 
-void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
-    verifica_tempo_poderX();
-    verifica_tempo_especial();
+void move_cobra_lista(Pilha *pilha,Deque * deque, int matriz[100][100]){ //essa funcao eh responsavel por mover algumas coisas, como a cobra ou a lista de poderes (depende da tecla pressionada)
+    verifica_tempo_poderX(); //essa funcao ira verificar se o tempo necessario para o poder_X desaparecer foi atingido
+    verifica_tempo_especial(); //essa faz o mesmo, mas para a barra de especial
     
-    //----------auxiliares
-    // gotoxy(tamx_tela+50,2);
-    // printf("%d",tempo_printa);
-    // gotoxy(tamx_tela+50,3);
-    // printf("%d %d %d",tmp_comeco_poderX,tmp_fim,tmp_comeco_poderX-tmp_fim);
-    char c=direcao;
-    c=delay(pilha, deque);
+    char c=delay(pilha, deque); //a funcao delay retorna a direcao atual da cobra ou a nova direcao da cobra
     Node *aux1, *aux2;
   
     aux1=pilha->topo;
@@ -513,23 +481,6 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
     savex=aux1->dados.x;
     savey=aux1->dados.y;
   
-    // int k=0;
-    // if (pilha->tamanho>1)
-    // {
-    //     gotoxy(savex,savey);
-    //     matriz[savex][savey]=0;
-    //     printf(" ");
-    
-    //     for (k=0;k<(pilha->tamanho-1);k++)
-    //     {
-    //         aux1->dados.x=aux1->next->dados.x;
-    //         aux1->dados.y=aux1->next->dados.y;
-            
-    //         aux1=aux1->next;
-      
-    //   }   
-       
-    // }  
     savex=pilha->cabeca->dados.x;
     savey=pilha->cabeca->dados.y;
     if(kbhit()){
@@ -584,8 +535,6 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
     }
     else{
         if(kbhit()) c=botao(pilha, deque);
-        // gotoxy(posx_cobra,posy_cobra); //desaparece com a cobra
-        // printf(" ");
         gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y);
         printf(" ");
         if(c=='a' && direcao!='d'){
@@ -627,31 +576,6 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
         printf("M"); 
           
     }
-    
-    
-    
-    //printa corpo da cobra
-    /*for (k=0;k<((pilha->tamanho)-1);k++)
-    {
-     gotoxy(aux2->dados.x,aux2->dados.y);
-     matriz[aux2->dados.x][aux2->dados.y]=1;
-     printf("M");   
-        aux2=aux2->next;
-    }*/
-    
-    /*//colisao com corpo = gameover
-    if (pilha->tamanho>0)
-    {
-        Node *aux=pilha->topo;
-        for (k=0;k<(pilha->tamanho);k++)
-        {
-            if ((aux->dados.x==pilha->cabeca->dados.x) && (aux->dados.y==pilha->cabeca->dados.y) && (aux != pilha->cabeca))
-            {
-                gameover = 1;
-            }
-            aux=aux->next;  
-        }  
-    }*/
     
      if ((matriz[pilha->cabeca->dados.x][pilha->cabeca->dados.y]==1))
         {
