@@ -377,18 +377,15 @@ void poder_Y(Pilha *pilha, Deque *deque){ //diminui o corpo da cobra pela metade
     }
 }
 
+//Poder W faz a cobra inverter a cabeca com a cauda, causando tambem uma inversao no movimento.
 void poder_W(Deque *deque, Pilha *pilha) {
     int savex, savey;
     savex=pilha->cabeca->dados.x;
     savey=pilha->cabeca->dados.y;
     
-    
-    No *aux = malloc(sizeof(No));
-    No *atual = malloc(sizeof(No)); 
-    No *proximo = malloc(sizeof(No));
-    No *anterior = malloc(sizeof(No));
+   
     if (deque->total_elementos > 0 && pilha->tamanho > 0) {
-        
+        //Inversao do movimento:
         if (direcao=='a')
         {
             direcao='d';
@@ -405,61 +402,26 @@ void poder_W(Deque *deque, Pilha *pilha) {
         {
             direcao='w';
         }
-        
-        /*Node *cabeca = pilha->topo; // Remove o nó da cabeça da pilha
-        pilha->topo = cabeca->next;
-        pilha->tamanho--;
-        
-        No *novo_no = (No*) malloc(sizeof(No)); // Insere o nó da cabeça no final do deque
-        novo_no->dados = cabeca->dados;
-        novo_no->next = NULL;
-        novo_no->prev = deque->fim;
-        
-        
-     atual=deque->inicio;
-        anterior=NULL;
-        while (atual != NULL) { 
-            proximo = atual->next;
-            atual->next = anterior;
-            atual->prev = proximo;
-            anterior = atual;
-            atual = proximo;
    
-*/      
-
-
+   //A posicao da cabeca agora vira o fim da cauda:
 matriz[deque->fim->dados.x][deque->fim->dados.y]=0;
-
 PoeI(savex, savey, deque);
 
 
-gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y); 
-        printf("M");
+        //O fim da cauda e desalocada para dar espaco a cabeca
         pilha->cabeca->dados.x=deque->fim->dados.x;
         pilha->cabeca->dados.y=deque->fim->dados.y;
         TiraF(deque);
         gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y); 
         printf("0");
         matriz[savex][savey]=1;
-        Inverte(deque,matriz);
-  //    aux=deque->inicio;
         
-  //    deque->inicio=deque->fim;
-  //    deque->fim=aux;
-      
+        //Como invertemos a cabeca com a cauda, temos que inverter tambem o corpo da cobra para ligarmos o que antes era o penultimo elemento do corpo - e que agora sera o primeiro elemento do corpo - com a nova cabeca da cobra.
+        Inverte(deque,matriz);
+  
         }
     
-        
-        /*
-        if (deque->total_elementos == 1) {
-            deque->inicio = novo_no;
-            deque->fim = novo_no;
-        } else {
-            deque->fim->next = novo_no;
-            deque->fim = novo_no;
-        }
-        free(cabeca);
-        */
+       
     
 }
 
