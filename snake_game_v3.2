@@ -3,9 +3,6 @@
 #include <time.h>
 #include <ctype.h>
 #include "deque.h"
-#include "lista.h"
-#include "pilha_encadeada.h"
-#include "pilha_sequencial.h"
 #ifdef _WIN32
 //bibliotecas windows
     #include <conio.h>
@@ -91,14 +88,15 @@ int matriz[100][100];
 barra_especial especial;
 
 //----------------parte_grafica---------------------------
-void printa_pontuacao(){
-    //if(!i && !j)
+void printa_pontuacao(){ 
+    //Printa a quantidade de pontos da cobra, com cada fruta (*) dando uma quantidade de pontos definido pela variável pontos_ganhos_por_fruta
     gotoxy(0, tamy_tela + 1);
     printf("Pontuação: %d\n", pontuacao);
     gotoxy(tamx_tela+100,0);
 }
 
 void printa_fruta(){
+    //Printa a fruta nas coordenadas (posx_fruta, posy_fruta), que são randomizadas na função gera_fruta
     gotoxy(posx_fruta,posy_fruta);
     printf("*"); //trocar por printa lista
     gotoxy(tamx_tela+100,0);
@@ -161,6 +159,7 @@ void printa_cobra(Pilha *pilha){
 }
 
 void printa_vidas(Pilha *pilha){ //Chamar a função toda vez que a cobra colidir/tomar dano e quando ela ganhar vida
+    //Leva o cursor para a posição logo abaixo dos pontos e printa os corações de acordo com a quantidade de vidas que a cobra tem
     gotoxy(0, tamy_tela+2);
     printf("HP: ");
     for(int i = 0; i < pilha->cabeca->dados.hp; i++)
@@ -170,6 +169,7 @@ void printa_vidas(Pilha *pilha){ //Chamar a função toda vez que a cobra colidi
 }
 
 void limpa_linha_vidas(){
+    //Limpa a linha das vidas toda vez que ganhar ou perder uma vida, para garantir que o número dos corações será exatamente o mesmo do número de vidas que a cobra possui de fato
     gotoxy(0, tamy_tela+2);
     printf("                    ");
     gotoxy(tamx_tela+100,0);
@@ -186,10 +186,12 @@ void printa_tutorial(){
     gotoxy(xtutorial-15, ytutorial+5);
     printf("A cobra crescerá de tamanho ao pegar *");
     gotoxy(xtutorial-15, ytutorial+7);
-    printf("Você receberá poderes ao pegar X");
+    printf("Você receberá poderes ao pegar X, Y e W");
     gotoxy(xtutorial-15, ytutorial+9);
-    printf("Pressione 'U' para usar o poder indicado pela seta ↓");
+    printf("Caso você tenha uma única vida, uma vida extra será concedida ao pegar Z");
     gotoxy(xtutorial-15, ytutorial+11);
+    printf("Pressione 'U' para usar o poder indicado pela seta ↓");
+    gotoxy(xtutorial-15, ytutorial+13);
     printf("Para encerrar o jogo, pressione 'X'");
 
 }
@@ -211,6 +213,7 @@ void limpa_cobra(Deque *deque){
  
     gotoxy(tamx_tela+100,0);
 }
+
 
 
 //----------------parte_logica---------------------------
@@ -357,7 +360,7 @@ void poder_Y(Pilha *pilha, Deque *deque){ //diminui o corpo da cobra pela metade
         else novo_tamanho = ((deque->total_elementos) / 2) + 1; //se o tamanho do corpo da cobra for impar, corta pela metade e insere 1
         
 
-        for (int i = 0; i < novo_tamanho; i++){ 
+        for (int i = 0; i < novo_tamanho; i++){ //Iteração para garantir que todos os elementos necessários serão removidos do deque, não aparecerão mais na tela e serão printados novamente
             limpa_cobra(deque);
             TiraF(deque);
             printa_cobra(pilha);
@@ -365,41 +368,62 @@ void poder_Y(Pilha *pilha, Deque *deque){ //diminui o corpo da cobra pela metade
     }
 }
 
-void poder_W(Pilha *pilha){
-    Node *anterior = NULL;
-    Node *atual = pilha->topo;
-    Node *proximo = NULL;
-    while (atual != NULL) {
-        proximo = atual->next;
-        atual->next = anterior;
-        anterior = atual;
-        atual = proximo;
-    }
-    pilha->topo = anterior;
+//Poder W faz a cobra inverter a cabeca com a cauda, causando tambem uma inversao no movimento.
+void poder_W(Deque *deque, Pilha *pilha) {
+    int savex, savey;
+    savex=pilha->cabeca->dados.x;
+    savey=pilha->cabeca->dados.y;
+    
+   
+    if (deque->total_elementos > 0 && pilha->tamanho > 0) {
+        //Inversao do movimento:
+        if (direcao=='a')
+        {
+            direcao='d';
+        }
+        else if (direcao=='d')
+        {
+            direcao='a';
+        }
+        else if (direcao=='w')
+        {
+            direcao='s';
+        }
+        else if (direcao=='s')
+        {
+            direcao='w';
+        }
+   
+   //A posicao da cabeca agora vira o fim da cauda:
+matriz[deque->fim->dados.x][deque->fim->dados.y]=0;
+PoeI(savex, savey, deque);
+
+
+        //O fim da cauda e desalocada para dar espaco a cabeca
+        pilha->cabeca->dados.x=deque->fim->dados.x;
+        pilha->cabeca->dados.y=deque->fim->dados.y;
+        TiraF(deque);
+        gotoxy(pilha->cabeca->dados.x,pilha->cabeca->dados.y); 
+        printf("0");
+        matriz[savex][savey]=1;
+        
+        //Como invertemos a cabeca com a cauda, temos que inverter tambem o corpo da cobra para ligarmos o que antes era o penultimo elemento do corpo - e que agora sera o primeiro elemento do corpo - com a nova cabeca da cobra.
+        Inverte(deque,matriz);
+  
+        }
+    
+       
+    
 }
+
 
 void usa_poder(Pilha *pilha, Deque *deque){
     if(lista_elemento_inicial(&lista_poderes)=='X') poder_X(); //trocar 1 para X
     else if(lista_elemento_inicial(&lista_poderes)=='Y') poder_Y(pilha, deque);
-    else poder_W(pilha);
+    else poder_W(deque, pilha);
     // printf("\7");
     remove_lista(&lista_poderes);
     printa_lista_poderes(&lista_poderes);
-}
-
-void desprinta_barra_especial(){
-    gotoxy(tamx_tela+2,tamy_tela-barra_especial_tamanho(&especial));
-    printf("          "); 
-    gotoxy(tamx_tela+2,tamy_tela-1);
-    printf("          "); 
-    gotoxy(tamx_tela+2,tamy_tela-2);
-    printf("          "); 
-    gotoxy(tamx_tela+2,tamy_tela-3);
-    printf("          ");
-    gotoxy(tamx_tela+2,tamy_tela-4);
-    printf("          "); 
-    gotoxy(tamx_tela+2,tamy_tela-5);
-    printf("          ");
 }
 
 char botao(Pilha *pilha, Deque *deque){
@@ -464,6 +488,21 @@ void verifica_tempo_poderX(){
     }
 }
 
+void desprinta_barra_especial(){
+    gotoxy(tamx_tela+2,tamy_tela-barra_especial_tamanho(&especial));
+    printf("          "); 
+    gotoxy(tamx_tela+2,tamy_tela-1);
+    printf("          "); 
+    gotoxy(tamx_tela+2,tamy_tela-2);
+    printf("          "); 
+    gotoxy(tamx_tela+2,tamy_tela-3);
+    printf("          ");
+    gotoxy(tamx_tela+2,tamy_tela-4);
+    printf("          "); 
+    gotoxy(tamx_tela+2,tamy_tela-5);
+    printf("          ");
+}
+
 void verifica_tempo_especial(){
     clock_t tmp_fim=clock();
     if(modo_cobra_imortal && tmp_fim-10000000>=tmp_comeco_especial){ //tempo legal 1000000
@@ -488,31 +527,9 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
     // printf("%d %d %d",tmp_comeco_poderX,tmp_fim,tmp_comeco_poderX-tmp_fim);
     char c=direcao;
     c=delay(pilha, deque);
-    Node *aux1, *aux2;
-  
-    aux1=pilha->topo;
-    aux2=pilha->topo;
+ 
     int savex, savey;
-    savex=aux1->dados.x;
-    savey=aux1->dados.y;
   
-    // int k=0;
-    // if (pilha->tamanho>1)
-    // {
-    //     gotoxy(savex,savey);
-    //     matriz[savex][savey]=0;
-    //     printf(" ");
-    
-    //     for (k=0;k<(pilha->tamanho-1);k++)
-    //     {
-    //         aux1->dados.x=aux1->next->dados.x;
-    //         aux1->dados.y=aux1->next->dados.y;
-            
-    //         aux1=aux1->next;
-      
-    //   }   
-       
-    // }  
     savex=pilha->cabeca->dados.x;
     savey=pilha->cabeca->dados.y;
     if(kbhit()){
@@ -598,46 +615,27 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
     
     if (deque->total_elementos>0)
     {
+        //Para dar a impressao de movimento ao corpo da cobra, realizamos um push na posicao que a cabeca da cobra ocupava a 1 ciclo de movimento anterior e um pop no fim do corpo.
         
+        //Pop do fim do corpo:
         gotoxy(deque->fim->dados.x,deque->fim->dados.y);
         matriz[deque->fim->dados.x][deque->fim->dados.y]=0;
         printf(" ");
         TiraF(deque);
         
+        //Push nas coordenadas savex e savey, que sao as coordenadas da cabeca da cobra antes da atualizacao de seu movimento:
         PoeI(savex,savey, deque);
         gotoxy(deque->inicio->dados.x,deque->inicio->dados.y);
         matriz[deque->inicio->dados.x][deque->inicio->dados.y]=1;
         printf("M"); 
           
     }
-    
-    
-    
-    //printa corpo da cobra
-    /*for (k=0;k<((pilha->tamanho)-1);k++)
-    {
-     gotoxy(aux2->dados.x,aux2->dados.y);
-     matriz[aux2->dados.x][aux2->dados.y]=1;
-     printf("M");   
-        aux2=aux2->next;
-    }*/
-    
-    /*//colisao com corpo = gameover
-    if (pilha->tamanho>0)
-    {
-        Node *aux=pilha->topo;
-        for (k=0;k<(pilha->tamanho);k++)
-        {
-            if ((aux->dados.x==pilha->cabeca->dados.x) && (aux->dados.y==pilha->cabeca->dados.y) && (aux != pilha->cabeca))
-            {
-                gameover = 1;
-            }
-            aux=aux->next;  
-        }  
-    }*/
-    
+
+   
+   //Sistema de colisao: quando as coordenadas da cabeca coincidem com a alguma coordenada do corpo, a cobra perde vida.
      if ((matriz[pilha->cabeca->dados.x][pilha->cabeca->dados.y]==1))
         {
+        //A matriz guardara com valor 1 as coordenadas x,y onde ha corpo. Assim, caso as coordenadas da cabeca dentro da matriz tenha conteudo 1, sabemos que e um espaco onde uma parte do corpo esta ocupando.
             pilha->cabeca->dados.hp--;
             limpa_linha_vidas();
             printa_vidas(pilha);
@@ -645,14 +643,15 @@ void move_cobra(Pilha *pilha,Deque * deque, int matriz[100][100]){
                 gameover=1;
         }
         
-    // gotoxy(posx_cobra,posy_cobra);
-    // printf("0");
+    
     gotoxy(tamx_tela+100,0);
     printf(" ");
 }
 
 void inicializa_vida(Pilha *pilha, int vida_inicial){
+    //Define a vida da cobra, a função é chamada dentro do main para garantir que a vida será inicializada. A princípio, o valor 1 deverá ser passado como parâmetro da vida
     pilha->cabeca->dados.hp = vida_inicial;
+    
 }
 
 
@@ -663,7 +662,10 @@ void gera_poder(Pilha *pilha){ //parece estar bugado
     if(aux_pega_valor==1) poder_printado='X';
     else if(aux_pega_valor==2) poder_printado='Y';
     else if(aux_pega_valor==3) poder_printado='W';
-    else poder_printado='Z';
+    else{
+      poder_printado='Z';
+      poder_hpUp();
+    } 
     
     do{ //gera frutas ate que ela nao esteja na pos da cobra ou dos poderes
         srand(time(NULL)); //*trocar funcao rand por funcao melhor
@@ -747,7 +749,7 @@ int main(){
     printa_lista_poderes();
     printa_pontuacao();
     printa_barra_especial_nome();
-    inicializa_vida(pilha, 2);
+    inicializa_vida(pilha, 1);
     printa_vidas(pilha);
     printa_tutorial();
     gotoxy(tamx_tela,tamy_tela);
