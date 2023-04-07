@@ -96,6 +96,7 @@ void printa_pontuacao(){
 }
 
 void printa_fruta(){
+    //Printa a fruta nas coordenadas (posx_fruta, posy_fruta), que são randomizadas na função gera_fruta
     gotoxy(posx_fruta,posy_fruta);
     printf("*"); //trocar por printa lista
     gotoxy(tamx_tela+100,0);
@@ -200,23 +201,13 @@ void limpa_cobra(Deque *deque){
     //Limpa os caracteres da posição da cobra ao usar o poder que corta seu corpo pela metade, evitando que elementos removidos da estrutura continuem aparecendo na tela
     No *aux= deque->fim;
    
-    do
-    {
-     if (aux->next == NULL)
-     {
-         gotoxy(aux->dados.x,aux->dados.y); 
-         
-         printf(" ");
-     }
-     
-     else
-     {
+    
+    do{
         gotoxy(aux->dados.x,aux->dados.y);
          
-         printf(" "); 
-     }
+        printf(" ");
 
-      aux=aux->next;
+        aux=aux->next;
       
     } while (aux!= NULL);
 
