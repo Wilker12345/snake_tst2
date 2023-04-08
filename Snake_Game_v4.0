@@ -400,7 +400,7 @@ void usa_poder(Pilha *pilha, Deque *deque){ // caso alguma tecla de usar poder t
     // e usa o respectivo poder. O poder indicado pela seta eh o poder que esta como elemento inicial da estrutura da lista
     if(lista_elemento_inicial(&lista_poderes)=='X') poder_X();
     else if(lista_elemento_inicial(&lista_poderes)=='Y') poder_Y(pilha, deque);
-    else poder_W(deque, pilha);
+   else if(lista_elemento_inicial(&lista_poderes)=='W') poder_W(deque, pilha);
     printf("\7"); //quando pega poder, faz barulho
     remove_lista(&lista_poderes); //remove poder da lista
     printa_lista_poderes(&lista_poderes); //printa lista atualizada
