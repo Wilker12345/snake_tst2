@@ -34,4 +34,6 @@ void TiraI (Deque *deque);
 
 void TiraF (Deque *deque);
 
+void Inverte(Deque *deque, int matriz[100][100]);
+
 #endif // DEQUE_H_INCLUDED
