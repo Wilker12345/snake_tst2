@@ -111,3 +111,24 @@ void TiraF (Deque *deque)
     deque->total_elementos--;
   }
 }
+
+void Inverte(Deque *deque, int matriz[100][100])
+{
+    No *aux = malloc (sizeof(No));
+    No *save = malloc (sizeof(No));
+    
+    aux=deque->inicio;
+          while(aux!=NULL)
+            {
+                save=deque->inicio;
+                gotoxy(save->dados.x,save->dados.y); 
+                   printf(" ");
+                   matriz[save->dados.x][save->dados.y]=0;;
+                TiraI(deque);
+                aux=aux->next;
+                Inverte(deque, matriz);
+                
+                PoeI(save->dados.x, save->dados.y,deque);
+            }
+
+}
