@@ -191,25 +191,11 @@ void limpa_cobra(Deque *deque){
     int i=0,j=0;
     No *aux= deque->fim;
    
-    do
-    {
-     if (aux->next == NULL)
-     {
-         gotoxy(aux->dados.x,aux->dados.y);
-         
-         printf(" ");
-     }
-     
-     else
-     {
-        gotoxy(aux->dados.x,aux->dados.y);
-         
-         printf(" "); 
-     }
+    //Printa um espaço vazio na posição do último elemento da cobra, que será removido do deque posteriormente
+    gotoxy(aux->dados.x,aux->dados.y);
+    printf(" ");
+    aux=aux->next;
 
-      aux=aux->next;
-      
-    } while (aux!= NULL);
 
     int aux_x = deque->fim->dados.x;
     int aux_y = deque->fim->dados.y;
@@ -706,7 +692,7 @@ int main(){
     printa_lista_poderes();
     printa_pontuacao();
     printa_barra_especial_nome();
-    inicializa_vida(&pilha, 2);
+    inicializa_vida(&pilha, 1);
     printa_vidas(&pilha);
     printa_tutorial();
     printf("\7");
